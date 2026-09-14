@@ -84,6 +84,9 @@ export default function HeroMotion({
 
       if (settled) {
         running = false;
+        // Drop the compositor promotion while nothing is moving — `will-change`
+        // holds GPU memory for as long as it is declared.
+        el.dataset.heroSettled = "true";
         return;
       }
       frame = requestAnimationFrame(tick);
@@ -92,6 +95,7 @@ export default function HeroMotion({
     const wake = () => {
       if (running) return;
       running = true;
+      delete el.dataset.heroSettled;
       last = performance.now();
       frame = requestAnimationFrame(tick);
     };

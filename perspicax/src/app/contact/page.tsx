@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import PageShell from "@/components/PageShell";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import ContactForm from "@/components/ContactForm";
 
@@ -11,13 +10,12 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="bg-bg font-sans text-text">
-      <Header currentPath="/contact" />
+    <PageShell currentPath="/contact">
 
       <section className="relative px-6 pb-20 pt-10 sm:px-11 sm:pb-24 sm:pt-16">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(100%_60%_at_82%_6%,rgba(59,130,246,0.08)_0%,rgba(11,14,26,0)_62%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(100%_60%_at_82%_6%,rgba(59,130,246,0.08)_0%,rgba(253,252,250,0)_62%)]"
         />
         <div className="relative mx-auto flex max-w-[620px] flex-col gap-10 sm:gap-16">
           <div className="flex flex-col gap-5">
@@ -36,8 +34,6 @@ export default function ContactPage() {
           </RevealOnScroll>
         </div>
       </section>
-
-      <Footer />
-    </div>
+    </PageShell>
   );
 }

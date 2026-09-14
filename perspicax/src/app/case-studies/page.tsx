@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import PageShell from "@/components/PageShell";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import CaseStudyCard from "@/components/CaseStudyCard";
 
@@ -44,13 +43,12 @@ const CASE_STUDIES = [
 
 export default function CaseStudiesPage() {
   return (
-    <div className="bg-bg font-sans text-text">
-      <Header currentPath="/case-studies" />
+    <PageShell currentPath="/case-studies">
 
       <section className="relative px-6 pb-11 pt-10 sm:px-11 sm:pb-16 sm:pt-16">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(110%_68%_at_14%_0%,rgba(59,130,246,0.08)_0%,rgba(11,14,26,0)_60%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(110%_68%_at_14%_0%,rgba(59,130,246,0.08)_0%,rgba(253,252,250,0)_60%)]"
         />
         <div className="relative mx-auto flex max-w-[760px] flex-col gap-6">
           <RevealOnScroll>
@@ -73,8 +71,6 @@ export default function CaseStudiesPage() {
           ))}
         </div>
       </section>
-
-      <Footer />
-    </div>
+    </PageShell>
   );
 }

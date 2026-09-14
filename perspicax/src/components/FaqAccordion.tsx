@@ -30,9 +30,9 @@ export default function FaqAccordion({ items }: { items: FaqItem[] }) {
                 className="relative h-[13px] w-[13px] flex-none transition-transform duration-[260ms] ease-[var(--ease-out)]"
                 style={{ transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}
               >
-                <span className="absolute left-0 top-1/2 h-px w-[13px] -translate-y-1/2 bg-teal" />
+                <span className="absolute left-0 top-1/2 h-px w-[13px] -translate-y-1/2 bg-teal-ink" />
                 <span
-                  className="absolute left-1/2 top-0 h-[13px] w-px -translate-x-1/2 bg-teal transition-opacity duration-[260ms] ease-[var(--ease-out)]"
+                  className="absolute left-1/2 top-0 h-[13px] w-px -translate-x-1/2 bg-teal-ink transition-opacity duration-[260ms] ease-[var(--ease-out)]"
                   style={{ opacity: isOpen ? 0 : 1 }}
                 />
               </span>

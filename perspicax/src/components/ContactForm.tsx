@@ -119,12 +119,12 @@ export default function ContactForm() {
 
         <div role="status" aria-live="polite">
           {status === "sent" && (
-            <span className="text-[0.8125rem] text-teal">
+            <span className="text-[0.8125rem] text-teal-ink">
               Thank you — we&apos;ll read it and write back.
             </span>
           )}
           {status === "error" && error && (
-            <span className="text-[0.8125rem] text-accent">{error}</span>
+            <span className="text-[0.8125rem] text-accent-ink">{error}</span>
           )}
         </div>
       </div>

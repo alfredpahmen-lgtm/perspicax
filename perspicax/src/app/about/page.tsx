@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import PageShell from "@/components/PageShell";
 import RevealOnScroll from "@/components/RevealOnScroll";
 
 export const metadata: Metadata = {
@@ -16,13 +15,12 @@ const BELIEFS = [
 
 export default function AboutPage() {
   return (
-    <div className="bg-bg font-sans text-text">
-      <Header currentPath="/about" />
+    <PageShell currentPath="/about">
 
       <section className="relative px-6 pb-14 pt-10 sm:px-11 sm:pb-20 sm:pt-16">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(110%_68%_at_14%_0%,rgba(139,92,246,0.08)_0%,rgba(11,14,26,0)_60%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(110%_68%_at_14%_0%,rgba(139,92,246,0.08)_0%,rgba(253,252,250,0)_60%)]"
         />
         <div className="relative mx-auto flex max-w-[760px] flex-col gap-8">
           <RevealOnScroll>
@@ -55,7 +53,7 @@ export default function AboutPage() {
                   i === BELIEFS.length - 1 ? "border-b" : ""
                 }`}
               >
-                <div className="min-w-[2.5ch] font-serif text-[clamp(1.25rem,2vw,1.625rem)] leading-none tracking-[-0.01em] text-teal">
+                <div className="min-w-[2.5ch] font-serif text-[clamp(1.25rem,2vw,1.625rem)] leading-none tracking-[-0.01em] text-teal-ink">
                   {String(i + 1).padStart(2, "0")}
                 </div>
                 <p className="m-0 max-w-[46ch] text-balance font-serif text-[clamp(1.1875rem,2vw,1.625rem)] font-normal leading-[1.4] tracking-[-0.005em]">
@@ -66,8 +64,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
-    </div>
+    </PageShell>
   );
 }

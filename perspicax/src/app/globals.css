@@ -1,20 +1,59 @@
 @import "tailwindcss";
 
+/* ====================================================================
+   Perspicax design tokens.
+
+   The site runs two grounds, and every component reads the same token
+   names in both — so no component carries a per-theme branch.
+
+     :root        light. Every page except Home.
+     .theme-dark  dark. Scoped to the Home hero, which keeps the video
+                  and particle background.
+
+   `.theme-dark` is a *scope*, not a user preference: it is applied in
+   markup by the page that wants it, never by a media query.
+   ==================================================================== */
+
 :root {
-  /* Perspicax design tokens — dark theme (the site's only theme; do not add a light variant) */
-  --bg: #0b0e1a;
-  --surface: #12141c;
-  --text: #f5f5f7;
-  --muted: #94a3b8;
+  /* Light ground — warm off-white paper, not clinical white. */
+  --bg: #fdfcfa;
+  --surface: #f0eee9;
+  --text: #0d1726;
+  --muted: #5b6270;
+
+  /* Brand hues. Unchanged across both grounds. */
   --blue: #3b82f6;
   --violet: #8b5cf6;
   --accent: #ec4899;
   --teal: #14b8a6;
 
-  /* Hairline borders as a token so `prefers-contrast: more` can strengthen them
-     in one place (see the accessibility overrides at the foot of this file). */
-  --hairline: rgba(148, 163, 184, 0.16);
-  
+  /* --------------------------------------------------------------
+     Teal has to exist twice.
+
+     #14B8A6 on #FDFCFA is 2.43:1 — it fails WCAG AA for body text
+     (4.5:1) and even the 3:1 floor for large text and graphics. It was
+     fine on the near-black ground (7.23:1) but it is not legible on
+     paper.
+
+     So the brand teal stays exactly as it is for fills, rules, borders
+     and anything decorative, and `--teal-ink` carries the same hue,
+     darkened, wherever teal becomes *text*: stat numerals, step
+     numbers, accordion marks, case-study tags. 5.51:1 on the light
+     ground, 4.88:1 on the secondary surface — AA either way.
+
+     On the dark scope the two collapse back into one value, because
+     #14B8A6 already passes there.
+     -------------------------------------------------------------- */
+  --teal-ink: #0d7468;
+
+  /* Same problem, same shape: #EC4899 is 3.44:1 on the light ground, and it
+     carries form *errors* — the one place a low-contrast string is least
+     acceptable. #BE185D is 5.89:1 and still unmistakably the brand pink. The
+     decorative accent itself is untouched. */
+  --accent-ink: #be185d;
+
+  --hairline: rgba(13, 23, 38, 0.14);
+
   /* Motion. Critically damped — no overshoot — is the house default: the brand is
      quiet confidence, and nothing on this site carries gesture velocity that would
      justify bounce. Press feedback is near-instant; hover is unhurried. */
@@ -23,8 +62,31 @@
   --hover-duration: 180ms;
   --press-scale: 0.97;
 
-  /* Focus ring — violet lifted toward white so it carries on the near-black ground. */
+  --focus-ring: color-mix(in srgb, var(--violet) 72%, black);
+
+  /* Single source of truth for the header's height. Anything that has to
+     clear the fixed bar reads this instead of repeating a magic number —
+     the old hardcoded `scroll-margin-top: 88px` was already 4px short of
+     the 92px mobile header. */
+  --header-h: 76px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-h: 84px;
+  }
+}
+
+.theme-dark {
+  --bg: #0d1726;
+  --surface: #16213a;
+  --text: #f5f5f7;
+  --muted: #94a3b8;
+  --teal-ink: var(--teal);
+  --accent-ink: var(--accent);
+  --hairline: rgba(148, 163, 184, 0.16);
   --focus-ring: color-mix(in srgb, var(--violet) 65%, white);
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -36,6 +98,8 @@
   --color-violet: var(--violet);
   --color-accent: var(--accent);
   --color-teal: var(--teal);
+  --color-teal-ink: var(--teal-ink);
+  --color-accent-ink: var(--accent-ink);
   --font-serif: var(--font-playfair), Georgia, serif;
   --font-sans: var(--font-inter), system-ui, sans-serif;
 }
@@ -43,7 +107,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
@@ -51,8 +115,10 @@
     color: var(--text);
   }
 
-  section[id] {
-    scroll-margin-top: 88px;
+  /* Anything that can be linked to clears the fixed header by its real
+     height, not a guess. */
+  [id] {
+    scroll-margin-top: calc(var(--header-h) + 16px);
   }
 
   /* Every interactive element gets a visible keyboard focus state, not just inputs. */
@@ -142,20 +208,29 @@
 
   /* ------------------------------------------------------------------
      Materials — translucency only where content actually passes behind the
-     surface: the sticky header, and the hero's chips over the video. On the
-     interior sections the ground is flat and opaque, so a backdrop-filter
-     there would cost GPU time for no visible change.
+     surface: the header, the full-screen menu, and the hero's chips over
+     the video.
      ------------------------------------------------------------------ */
   /* Standard property only — the build's minifier adds the -webkit- prefix from
      its browser targets. Writing the prefix by hand makes it dedupe the two and
      keep only the prefixed one, which silently drops the blur in Firefox. */
   .material {
-    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
     backdrop-filter: blur(14px) saturate(160%);
   }
   .material-chip {
-    background: color-mix(in srgb, var(--surface) 55%, transparent);
+    background: color-mix(in srgb, var(--surface) 62%, transparent);
     backdrop-filter: blur(12px) saturate(150%);
+  }
+
+  /* Card ground. One class instead of a per-component gradient, so the two
+     themes diverge in exactly one place. */
+  .card-surface {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--surface) 70%, transparent),
+      color-mix(in srgb, var(--bg) 40%, transparent)
+    );
   }
 
   /* ------------------------------------------------------------------
@@ -191,7 +266,7 @@
       color var(--hover-duration) var(--ease-out);
   }
   .pressable-row:active {
-    background-color: color-mix(in srgb, var(--muted) 8%, transparent);
+    background-color: color-mix(in srgb, var(--muted) 12%, transparent);
   }
 }
 
@@ -207,9 +282,15 @@
 }
 
 /* --------------------------------------------------------------------
-   Hero entrance — a short orchestrated sequence rather than one flat pop,
-   so the section reads as arriving. Ends fully visible (`both`), so the
-   copy is never stranded invisible if a frame is dropped.
+   Hero entrance.
+
+   Two tracks. The headline gets a per-line mask reveal — each line rises
+   out of its own clipped band, which reads as the sentence being set
+   rather than a block fading in. Everything else in the hero keeps the
+   plain rise, delayed so the headline leads.
+
+   Both end fully visible (`both`), so copy is never stranded invisible
+   if a frame is dropped.
    -------------------------------------------------------------------- */
 @keyframes hero-rise {
   from {
@@ -229,23 +310,60 @@
     opacity: 1;
   }
 }
+/* The line itself travels further than the rise above — it is emerging from
+   behind the mask edge, so the distance has to read as a reveal. */
+@keyframes hero-line {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.9em, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .hero-enter > * {
   animation: hero-rise 480ms var(--ease-out) both;
 }
 .hero-enter > *:nth-child(1) {
   animation-delay: 0ms;
 }
+/* The headline occupies slot 2 and animates its own lines, so the wrapper
+   itself must not also fade — that would double the opacity ramp. */
 .hero-enter > *:nth-child(2) {
-  animation-delay: 90ms;
+  animation: none;
 }
 .hero-enter > *:nth-child(3) {
-  animation-delay: 190ms;
+  animation-delay: 520ms;
 }
 /* Trust pills sit in a separate track at the foot of the frame, so they carry
    their own delay to stay part of the same sequence. */
 .hero-enter-late {
   animation: hero-rise 480ms var(--ease-out) both;
-  animation-delay: 290ms;
+  animation-delay: 620ms;
+}
+
+/* Each line is a clipping band; the span inside it does the moving. `pb/-mb`
+   gives descenders room so the mask doesn't shave the tail off a 'p' or 'y'. */
+.hero-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.hero-line > span {
+  display: block;
+  animation: hero-line 780ms var(--ease-out) both;
+}
+.hero-line:nth-child(1) > span {
+  animation-delay: 120ms;
+}
+.hero-line:nth-child(2) > span {
+  animation-delay: 230ms;
+}
+.hero-line:nth-child(3) > span {
+  animation-delay: 340ms;
 }
 
 /* --------------------------------------------------------------------
@@ -255,6 +373,12 @@
    `--hero-py` (pointer offset, -1 → 1) are written each frame by
    HeroMotion, already spring-smoothed. Transform and opacity only, so
    every layer stays on the compositor.
+
+   Depth is sold by *rate*, not distance: the video sits furthest back and
+   moves least, the particle field sits between, the glow nearest and moves
+   most. Every offset stays under ~20px — quiet depth, not a playful swing —
+   and the copy layer takes no pointer offset at all, because parallaxing
+   body text hurts reading.
    -------------------------------------------------------------------- */
 /* Still fallback behind the video. Visible until playback actually starts, so
    the hero is never a black rectangle — under reduced motion, while the file
@@ -270,13 +394,33 @@
 [data-hero-layer] {
   will-change: transform;
 }
-[data-hero-layer="video"] {
-  transform: translate3d(0, calc(var(--hero-scroll, 0) * 32px), 0) scale(1.08);
+/* Promotion costs GPU memory for as long as it is declared, and the layers are
+   static whenever the spring has arrived. HeroMotion flips this the moment it
+   settles and clears it again on the next pointer or scroll event. */
+[data-hero-settled="true"] [data-hero-layer] {
+  will-change: auto;
 }
+[data-hero-layer="video"] {
+  transform: translate3d(
+      calc(var(--hero-px, 0) * 5px),
+      calc(var(--hero-py, 0) * 5px + var(--hero-scroll, 0) * 32px),
+      0
+    )
+    scale(1.08);
+}
+/* The particle field — the middle plane. Twice the video's pointer travel. */
+[data-hero-layer="particles"] {
+  transform: translate3d(
+    calc(var(--hero-px, 0) * 11px),
+    calc(var(--hero-py, 0) * 11px - var(--hero-scroll, 0) * 14px),
+    0
+  );
+}
+/* The book glow — nearest plane, so it leads the pointer. */
 [data-hero-layer="glow"] {
   transform: translate3d(
-    calc(var(--hero-px, 0) * 8px),
-    calc(var(--hero-py, 0) * 8px - var(--hero-scroll, 0) * 26px),
+    calc(var(--hero-px, 0) * 18px),
+    calc(var(--hero-py, 0) * 18px - var(--hero-scroll, 0) * 26px),
     0
   );
 }
@@ -299,6 +443,39 @@
   animation: px-breathe 14s ease-in-out infinite;
 }
 
+/* Floating motes. Long periods and sub-10px travel: present when looked for,
+   invisible when not. Deliberately not a bounce — no overshoot anywhere. */
+@keyframes mote-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.22;
+  }
+  50% {
+    transform: translate3d(0, -9px, 0);
+    opacity: 0.5;
+  }
+}
+.mote {
+  animation: mote-drift var(--mote-duration, 19s) ease-in-out infinite;
+  animation-delay: var(--mote-delay, 0s);
+}
+
+/* The "start here" cue at the foot of the hero. A slow, small nudge down the
+   page — it points, it doesn't jump. */
+@keyframes cue-nudge {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, 4px, 0);
+  }
+}
+.cue-nudge {
+  animation: cue-nudge 3.4s ease-in-out infinite;
+}
+
 .gradient-primary {
   background-image: linear-gradient(95deg, var(--blue) 0%, var(--violet) 100%);
 }
@@ -317,9 +494,16 @@
   html {
     scroll-behavior: auto;
   }
-  .glow-breathe {
+  .glow-breathe,
+  .mote,
+  .cue-nudge {
     animation: none;
+  }
+  .glow-breathe {
     opacity: 0.85;
+  }
+  .mote {
+    opacity: 0.36;
   }
   [data-hero-layer] {
     transform: none;
@@ -327,6 +511,15 @@
   }
   .hero-enter > *,
   .hero-enter-late {
+    animation: hero-appear 300ms ease-out both;
+  }
+  /* The mask reveal is a spatial effect; under reduced motion the lines just
+     appear. The band itself must stop clipping, or a dropped frame could leave
+     a line permanently cut off. */
+  .hero-line {
+    overflow: visible;
+  }
+  .hero-line > span {
     animation: hero-appear 300ms ease-out both;
   }
   .pressable:active {
@@ -344,9 +537,13 @@
   }
 }
 
-/* Hairlines at 16% opacity effectively vanish in high-contrast mode. */
+/* Hairlines at low opacity effectively vanish in high-contrast mode. */
 @media (prefers-contrast: more) {
   :root {
+    --hairline: rgba(13, 23, 38, 0.5);
+    --muted: #434a57;
+  }
+  .theme-dark {
     --hairline: rgba(148, 163, 184, 0.55);
     --muted: #b6c2d2;
   }
