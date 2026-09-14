@@ -13,6 +13,12 @@ type RevealOnScrollProps = {
 /**
  * Fades children in the first time they cross into the viewport.
  * Standard fade convention: opacity only, ease-out, ~200ms. No slide, no bounce.
+ *
+ * Initial state is always `false`, on the server and on the client alike — any
+ * environment check during render (`typeof IntersectionObserver`, `typeof
+ * window`) resolves differently in the two passes and makes hydration mismatch
+ * on the class attribute. Every environment-dependent decision happens below,
+ * in the effect, which only ever runs on the client after mount.
  */
 export default function RevealOnScroll({
   children,
@@ -21,13 +27,20 @@ export default function RevealOnScroll({
   as: Tag = "div",
 }: RevealOnScrollProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  // No IntersectionObserver support (very old browser): show content immediately
-  // rather than leaving it invisible forever.
-  const [visible, setVisible] = useState(() => typeof IntersectionObserver === "undefined");
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
+    if (!el) return;
+
+    // Last-resort guard: every browser in this project's support matrix ships
+    // IntersectionObserver, but if it were ever missing, revealing directly on
+    // the node keeps content from being stranded invisible — and does it
+    // without a second render pass.
+    if (typeof IntersectionObserver === "undefined") {
+      el.classList.add("is-visible");
+      return;
+    }
 
     const io = new IntersectionObserver(
       (entries) => {

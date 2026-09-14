@@ -40,6 +40,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-bg text-text">
+        {/* Scroll reveals render at opacity 0 and are revealed by an observer.
+            With scripting off that reveal never runs, so show them outright —
+            static markup, identical on server and client, so it can't affect
+            hydration. */}
+        <noscript>
+          <style>{`.fade-in { opacity: 1 !important; }`}</style>
+        </noscript>
         {children}
       </body>
     </html>
