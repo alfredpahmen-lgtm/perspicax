@@ -24,23 +24,23 @@ Implemented from the Claude Design handoff bundle in `../project` (see `../READM
 
 `src/components/ContactForm.tsx` posts to `POST /api/contact`
 (`src/app/api/contact/route.ts`), which validates the payload, rejects honeypot bot
-submissions, and emails a notification via SMTP (`src/lib/mailer.ts`, using `nodemailer`).
+submissions, and emails a notification via [Resend](https://resend.com)
+(`src/lib/mailer.ts`).
 
 Copy `.env.example` to `.env.local` and fill in:
 
 ```
-SMTP_HOST=
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=
-SMTP_PASS=
-CONTACT_TO_EMAIL=
+RESEND_API_KEY=
 CONTACT_FROM_EMAIL=
+CONTACT_TO_EMAIL=
 ```
 
-Works with any SMTP provider (Resend, Postmark, SES, Gmail app password, etc). Without
-these set, submissions still validate and return success, but are only logged to the
-server console — nothing is silently dropped in dev.
+Defaults (used when the optional overrides above are unset): from
+`onboarding@resend.dev` (Resend's shared test sender — switch once a custom domain is
+verified in Resend, since sending from anything else requires one), to
+`alfredpahmen@gmail.com`. Without `RESEND_API_KEY` set, submissions still validate and
+return success, but are only logged to the server console — nothing is silently dropped
+in dev.
 
 ## Development
 

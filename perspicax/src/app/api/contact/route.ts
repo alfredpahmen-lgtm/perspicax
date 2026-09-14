@@ -49,10 +49,10 @@ export async function POST(request: Request) {
   try {
     const result = await sendContactNotification({ name, email, book, goal, message });
     if (!result.sent) {
-      // SMTP isn't configured yet — log so the lead isn't silently lost, and still tell
-      // the visitor it went through once an operator wires up SMTP_* env vars.
+      // Resend isn't configured yet — log so the lead isn't silently lost, and still tell
+      // the visitor it went through once an operator sets RESEND_API_KEY.
       console.warn(
-        "[contact] SMTP not configured — submission logged instead of emailed:",
+        "[contact] Resend not configured — submission logged instead of emailed:",
         { name, email, book, goal, message },
       );
     }

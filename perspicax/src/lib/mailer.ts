@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 export type ContactSubmission = {
   name: string;
@@ -14,36 +14,29 @@ const GOAL_LABELS: Record<string, string> = {
   visibility: "General visibility",
 };
 
-function getTransport() {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
-    return null;
-  }
-  return nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: Number(SMTP_PORT),
-    secure: process.env.SMTP_SECURE === "true" || Number(SMTP_PORT) === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-  });
-}
+// resend.dev's shared test sender — swap CONTACT_FROM_EMAIL once a custom domain is verified
+// in Resend (a verified domain is required before sending from anything else).
+const DEFAULT_FROM = "onboarding@resend.dev";
+const DEFAULT_TO = "alfredpahmen@gmail.com";
 
 /**
- * Sends the contact-form notification email. Returns { sent: false, reason }
- * instead of throwing when SMTP isn't configured, so the route can decide
- * how to respond (e.g. still log the lead) rather than 500ing in dev.
+ * Sends the contact-form notification email via Resend. Returns { sent: false, reason }
+ * instead of throwing when the API key isn't configured, so the route can decide how to
+ * respond (e.g. still log the lead) rather than 500ing in dev.
  */
 export async function sendContactNotification(submission: ContactSubmission) {
-  const transport = getTransport();
-  const to = process.env.CONTACT_TO_EMAIL;
-  const from = process.env.CONTACT_FROM_EMAIL || process.env.SMTP_USER;
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.CONTACT_TO_EMAIL || DEFAULT_TO;
+  const from = process.env.CONTACT_FROM_EMAIL || DEFAULT_FROM;
 
-  if (!transport || !to || !from) {
-    return { sent: false as const, reason: "smtp_not_configured" as const };
+  if (!apiKey) {
+    return { sent: false as const, reason: "resend_not_configured" as const };
   }
 
+  const resend = new Resend(apiKey);
   const goalLabel = GOAL_LABELS[submission.goal] ?? submission.goal;
 
-  await transport.sendMail({
+  const { error } = await resend.emails.send({
     to,
     from,
     replyTo: submission.email,
@@ -67,6 +60,10 @@ export async function sendContactNotification(submission: ContactSubmission) {
       </div>
     `,
   });
+
+  if (error) {
+    throw new Error(`Resend error: ${error.message}`);
+  }
 
   return { sent: true as const };
 }
