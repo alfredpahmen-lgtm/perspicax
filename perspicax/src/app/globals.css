@@ -10,6 +10,21 @@
   --violet: #8b5cf6;
   --accent: #ec4899;
   --teal: #14b8a6;
+
+  /* Hairline borders as a token so `prefers-contrast: more` can strengthen them
+     in one place (see the accessibility overrides at the foot of this file). */
+  --hairline: rgba(148, 163, 184, 0.16);
+  
+  /* Motion. Critically damped — no overshoot — is the house default: the brand is
+     quiet confidence, and nothing on this site carries gesture velocity that would
+     justify bounce. Press feedback is near-instant; hover is unhurried. */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --press-duration: 100ms;
+  --hover-duration: 180ms;
+  --press-scale: 0.97;
+
+  /* Focus ring — violet lifted toward white so it carries on the near-black ground. */
+  --focus-ring: color-mix(in srgb, var(--violet) 65%, white);
 }
 
 @theme inline {
@@ -25,21 +40,164 @@
   --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
-  color-scheme: dark;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  section[id] {
+    scroll-margin-top: 88px;
+  }
+
+  /* Every interactive element gets a visible keyboard focus state, not just inputs. */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
+@layer components {
+  /* ------------------------------------------------------------------
+     Typography
+
+     Tracking is size-specific, never one value for every size: large display
+     text needs proportionally tighter tracking than small text, so a fixed
+     letter-spacing is wrong at one end of a fluid clamp(). Each class below
+     pairs its font-size ramp with a tracking ramp interpolated across the same
+     viewport range. Leading tightens as size grows.
+     ------------------------------------------------------------------ */
+
+  /* Hero headline — 40px → 116px, tracking -0.005em → -0.03em */
+  .type-display {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2.5rem, 8.4vw, 7.25rem);
+    line-height: 1.06;
+    letter-spacing: clamp(-3.48px, 1.14px - 0.334vw, -0.2px);
+    text-wrap: balance;
+  }
+
+  /* Subpage headline — 36px → 76px, tracking -0.005em → -0.025em */
+  .type-h1 {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2.25rem, 5.6vw, 4.75rem);
+    line-height: 1.08;
+    letter-spacing: clamp(-1.9px, 1.37px - 0.241vw, -0.18px);
+    text-wrap: balance;
+  }
+
+  /* Section headline — 30px → 56px, tracking -0.004em → -0.02em */
+  .type-h2 {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(1.875rem, 4.1vw, 3.5rem);
+    line-height: 1.14;
+    letter-spacing: clamp(-1.12px, 1.03px - 0.158vw, -0.12px);
+    text-wrap: balance;
+  }
+
+  /* Card headline — 24px → 38px, tracking -0.003em → -0.015em */
+  .type-h3 {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.8vw, 2.375rem);
+    line-height: 1.18;
+    letter-spacing: clamp(-0.57px, 0.79px - 0.1vw, -0.07px);
+    text-wrap: balance;
+  }
+
+  /* Stat numerals — 38px → 52px. Narrow enough a range that one tracking
+     value holds across it; no fluid ramp needed. */
+  .type-numeral {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2.375rem, 3.8vw, 3.25rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .type-numeral-sm {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-weight: 400;
+    font-size: 1.75rem;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+
+  /* ------------------------------------------------------------------
+     Hairlines — single token so high-contrast mode can strengthen them all.
+     ------------------------------------------------------------------ */
+  .hairline {
+    border-color: var(--hairline);
+  }
+
+  /* ------------------------------------------------------------------
+     Materials — translucency only where content actually passes behind the
+     surface: the sticky header, and the hero's chips over the video. On the
+     interior sections the ground is flat and opaque, so a backdrop-filter
+     there would cost GPU time for no visible change.
+     ------------------------------------------------------------------ */
+  /* Standard property only — the build's minifier adds the -webkit- prefix from
+     its browser targets. Writing the prefix by hand makes it dedupe the two and
+     keep only the prefixed one, which silently drops the blur in Firefox. */
+  .material {
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    backdrop-filter: blur(14px) saturate(160%);
+  }
+  .material-chip {
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
+    backdrop-filter: blur(12px) saturate(150%);
+  }
+
+  /* ------------------------------------------------------------------
+     Press feedback — the interface answers on pointer-down, not on release.
+     Hover is gated so taps don't leave a stuck hover state on touch devices.
+     ------------------------------------------------------------------ */
+  .pressable {
+    transition:
+      transform var(--press-duration) var(--ease-out),
+      opacity var(--hover-duration) var(--ease-out),
+      border-color var(--hover-duration) var(--ease-out),
+      background-color var(--hover-duration) var(--ease-out),
+      color var(--hover-duration) var(--ease-out);
+  }
+  .pressable:active {
+    transform: scale(var(--press-scale));
+  }
+  /* Inline text links answer by dimming — scaling a word inside a sentence
+     reads as a glitch rather than a press. */
+  .pressable-text {
+    transition:
+      color var(--hover-duration) var(--ease-out),
+      opacity var(--press-duration) var(--ease-out);
+  }
+  .pressable-text:active {
+    opacity: 0.55;
+  }
+
+  /* Full-width rows don't scale at all; they answer with a tint instead. */
+  .pressable-row {
+    transition:
+      background-color var(--press-duration) var(--ease-out),
+      color var(--hover-duration) var(--ease-out);
+  }
+  .pressable-row:active {
+    background-color: color-mix(in srgb, var(--muted) 8%, transparent);
+  }
 }
 
-section[id] {
-  scroll-margin-top: 88px;
-}
-
-/* Standard fade convention for scroll-triggered reveals: opacity only, ease-out, ~200ms */
+/* --------------------------------------------------------------------
+   Scroll reveals — opacity only, ease-out, ~200ms. No slide, no bounce.
+   -------------------------------------------------------------------- */
 .fade-in {
   opacity: 0;
   transition: opacity 200ms ease-out;
@@ -48,14 +206,82 @@ section[id] {
   opacity: 1;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+/* --------------------------------------------------------------------
+   Hero entrance — a short orchestrated sequence rather than one flat pop,
+   so the section reads as arriving. Ends fully visible (`both`), so the
+   copy is never stranded invisible if a frame is dropped.
+   -------------------------------------------------------------------- */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
   }
-  .glow-breathe {
-    animation: none !important;
-    opacity: 0.85;
+  to {
+    opacity: 1;
+    transform: none;
   }
+}
+@keyframes hero-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.hero-enter > * {
+  animation: hero-rise 480ms var(--ease-out) both;
+}
+.hero-enter > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.hero-enter > *:nth-child(2) {
+  animation-delay: 90ms;
+}
+.hero-enter > *:nth-child(3) {
+  animation-delay: 190ms;
+}
+/* Trust pills sit in a separate track at the foot of the frame, so they carry
+   their own delay to stay part of the same sequence. */
+.hero-enter-late {
+  animation: hero-rise 480ms var(--ease-out) both;
+  animation-delay: 290ms;
+}
+
+/* --------------------------------------------------------------------
+   Hero parallax layers.
+
+   `--hero-scroll` (0 → 1 through the first viewport) and `--hero-px` /
+   `--hero-py` (pointer offset, -1 → 1) are written each frame by
+   HeroMotion, already spring-smoothed. Transform and opacity only, so
+   every layer stays on the compositor.
+   -------------------------------------------------------------------- */
+/* Still fallback behind the video. Visible until playback actually starts, so
+   the hero is never a black rectangle — under reduced motion, while the file
+   is still buffering, or where the browser can't decode it at all. */
+[data-hero-still] {
+  opacity: 1;
+  transition: opacity 600ms var(--ease-out);
+}
+[data-video="playing"] [data-hero-still] {
+  opacity: 0;
+}
+
+[data-hero-layer] {
+  will-change: transform;
+}
+[data-hero-layer="video"] {
+  transform: translate3d(0, calc(var(--hero-scroll, 0) * 32px), 0) scale(1.08);
+}
+[data-hero-layer="glow"] {
+  transform: translate3d(
+    calc(var(--hero-px, 0) * 8px),
+    calc(var(--hero-py, 0) * 8px - var(--hero-scroll, 0) * 26px),
+    0
+  );
+}
+[data-hero-layer="copy"] {
+  transform: translate3d(0, calc(var(--hero-scroll, 0) * -14px), 0);
 }
 
 @keyframes px-breathe {
@@ -77,15 +303,56 @@ section[id] {
   background-image: linear-gradient(95deg, var(--blue) 0%, var(--violet) 100%);
 }
 
-/* Above-the-fold content (hero) doesn't need an IntersectionObserver — it's visible on load. */
-@keyframes fade-in-op {
-  from {
-    opacity: 0;
+/* --------------------------------------------------------------------
+   Accessibility overrides.
+
+   Deliberately unlayered: unlayered rules outrank every layered one, so
+   these beat both the component classes above and any Tailwind utility.
+   -------------------------------------------------------------------- */
+
+/* Reduced motion means a gentler, non-vestibular equivalent — not no feedback.
+   Opacity cross-fades stay (they aid comprehension); everything that moves in
+   space goes, and press answers with brightness instead of scale. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
-  to {
-    opacity: 1;
+  .glow-breathe {
+    animation: none;
+    opacity: 0.85;
+  }
+  [data-hero-layer] {
+    transform: none;
+    will-change: auto;
+  }
+  .hero-enter > *,
+  .hero-enter-late {
+    animation: hero-appear 300ms ease-out both;
+  }
+  .pressable:active {
+    transform: none;
+    filter: brightness(1.18);
   }
 }
-.hero-fade {
-  animation: fade-in-op 200ms ease-out both;
+
+/* Translucent surfaces go frosty-solid rather than blurred. */
+@media (prefers-reduced-transparency: reduce) {
+  .material,
+  .material-chip {
+    background: var(--surface);
+    backdrop-filter: none;
+  }
+}
+
+/* Hairlines at 16% opacity effectively vanish in high-contrast mode. */
+@media (prefers-contrast: more) {
+  :root {
+    --hairline: rgba(148, 163, 184, 0.55);
+    --muted: #b6c2d2;
+  }
+  .material,
+  .material-chip {
+    background: var(--surface);
+    backdrop-filter: none;
+  }
 }

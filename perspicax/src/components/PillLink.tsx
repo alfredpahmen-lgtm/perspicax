@@ -8,7 +8,12 @@ type PillLinkProps = {
 };
 
 /**
- * Pill-shaped CTA. Primary = gradient fill (blue → violet). Ghost = outline, for secondary actions.
+ * Pill-shaped CTA. Primary = gradient fill (blue → violet). Ghost = outline, for
+ * secondary actions.
+ *
+ * The primary's glow lives on a pseudo-layer whose opacity animates, rather than
+ * transitioning box-shadow and filter directly — opacity stays on the compositor
+ * where box-shadow and brightness would repaint the gradient every frame.
  */
 export default function PillLink({
   href,
@@ -17,15 +22,21 @@ export default function PillLink({
   className = "",
 }: PillLinkProps) {
   const base =
-    "inline-flex items-center justify-center rounded-full px-7 py-[15px] text-sm font-medium transition-[box-shadow,filter,background-color,border-color] duration-300 ease-out";
+    "pressable group relative inline-flex items-center justify-center rounded-full px-7 py-[0.9375rem] text-sm font-medium isolate";
 
   const styles =
     variant === "primary"
-      ? "gradient-primary text-text hover:shadow-[0_10px_40px_-12px_rgba(139,92,246,0.7)] hover:brightness-[1.06]"
-      : "border border-text/20 bg-surface/35 text-text hover:border-violet/60 hover:bg-surface/60";
+      ? "gradient-primary text-text"
+      : "material-chip hairline border text-text hover:border-violet/60";
 
   return (
     <Link href={href} className={`${base} ${styles} ${className}`}>
+      {variant === "primary" && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 rounded-full opacity-0 shadow-[0_10px_40px_-12px_rgba(139,92,246,0.85)] transition-opacity duration-[var(--hover-duration)] ease-[var(--ease-out)] group-hover:opacity-100"
+        />
+      )}
       {children}
     </Link>
   );

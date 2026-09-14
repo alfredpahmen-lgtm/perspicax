@@ -4,26 +4,29 @@ type StatCardProps = {
   size?: "lg" | "sm";
 };
 
+/**
+ * Not interactive — so it gets a hover lift on its border but no press state.
+ * A press response on something that can't be pressed advertises an affordance
+ * that isn't there.
+ */
 export default function StatCard({ value, label, size = "lg" }: StatCardProps) {
   const isLg = size === "lg";
   return (
     <div
       className={
         isLg
-          ? "flex flex-col gap-3.5 rounded-2xl border border-muted/16 bg-gradient-to-b from-surface/70 to-bg/40 px-6 py-8 transition-colors duration-300 hover:border-muted/30 sm:px-8 sm:py-10"
-          : "flex flex-col gap-2 rounded-xl border border-muted/16 px-5 py-5"
+          ? "hairline flex flex-col gap-3.5 rounded-2xl border bg-gradient-to-b from-surface/70 to-bg/40 px-6 py-8 transition-colors duration-[var(--hover-duration)] ease-[var(--ease-out)] hover:border-muted/30 sm:px-8 sm:py-10"
+          : "hairline flex flex-col gap-2 rounded-xl border px-5 py-5"
       }
     >
-      <div
+      <div className={`${isLg ? "type-numeral" : "type-numeral-sm"} text-teal`}>{value}</div>
+      <p
         className={
           isLg
-            ? "font-serif text-[clamp(38px,3.8vw,52px)] leading-none text-teal"
-            : "font-serif text-[28px] leading-none text-teal"
+            ? "text-pretty text-sm leading-relaxed text-muted"
+            : "text-[0.78rem] text-muted"
         }
       >
-        {value}
-      </div>
-      <p className={isLg ? "text-sm text-muted leading-relaxed text-pretty" : "text-[12.5px] text-muted"}>
         {label}
       </p>
     </div>

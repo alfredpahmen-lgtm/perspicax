@@ -26,12 +26,10 @@ export default function AboutPage() {
         />
         <div className="relative mx-auto flex max-w-[760px] flex-col gap-8">
           <RevealOnScroll>
-            <h1 className="m-0 max-w-[16ch] text-pretty font-serif text-[clamp(36px,5.6vw,76px)] font-normal leading-[1.08] tracking-[-0.015em]">
-              Why Perspicax exists.
-            </h1>
+            <h1 className="type-h1 m-0 max-w-[16ch]">Why Perspicax exists.</h1>
           </RevealOnScroll>
           <RevealOnScroll delayMs={60}>
-            <p className="m-0 max-w-[58ch] text-pretty text-[clamp(15px,1.2vw,16.5px)] leading-[1.85] text-muted">
+            <p className="m-0 max-w-[58ch] text-pretty text-[clamp(0.9375rem,1.2vw,1.03rem)] leading-[1.85] text-muted">
               Most authors don&apos;t need louder marketing. They need the right readers — people
               who were already looking for something like their book, and simply hadn&apos;t
               found it yet. Perspicax exists to close that gap: quietly, honestly, without
@@ -44,7 +42,7 @@ export default function AboutPage() {
       <section className="px-6 pb-20 sm:px-11 sm:pb-32">
         <div className="mx-auto flex max-w-4xl flex-col gap-9 sm:gap-14">
           <RevealOnScroll>
-            <h2 className="m-0 font-serif text-[clamp(24px,2.6vw,34px)] font-normal leading-[1.2]">
+            <h2 className="m-0 font-serif text-[clamp(1.5rem,2.6vw,2.125rem)] font-normal leading-[1.2] tracking-[-0.008em]">
               What we believe
             </h2>
           </RevealOnScroll>
@@ -53,14 +51,14 @@ export default function AboutPage() {
               <RevealOnScroll
                 key={belief}
                 delayMs={i * 60}
-                className={`flex items-baseline gap-6 border-t border-muted/16 py-7 sm:gap-11 sm:py-9 ${
+                className={`hairline flex items-baseline gap-6 border-t py-7 sm:gap-11 sm:py-9 ${
                   i === BELIEFS.length - 1 ? "border-b" : ""
                 }`}
               >
-                <div className="min-w-[2.5ch] font-serif text-[clamp(20px,2vw,26px)] leading-none text-teal">
+                <div className="min-w-[2.5ch] font-serif text-[clamp(1.25rem,2vw,1.625rem)] leading-none tracking-[-0.01em] text-teal">
                   {String(i + 1).padStart(2, "0")}
                 </div>
-                <p className="m-0 max-w-[46ch] text-pretty font-serif text-[clamp(19px,2vw,26px)] font-normal leading-[1.4]">
+                <p className="m-0 max-w-[46ch] text-balance font-serif text-[clamp(1.1875rem,2vw,1.625rem)] font-normal leading-[1.4] tracking-[-0.005em]">
                   {belief}
                 </p>
               </RevealOnScroll>

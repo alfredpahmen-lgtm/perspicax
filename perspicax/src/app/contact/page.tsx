@@ -22,12 +22,10 @@ export default function ContactPage() {
         <div className="relative mx-auto flex max-w-[620px] flex-col gap-10 sm:gap-16">
           <div className="flex flex-col gap-5">
             <RevealOnScroll>
-              <h1 className="m-0 max-w-[16ch] text-pretty font-serif text-[clamp(36px,5.6vw,72px)] font-normal leading-[1.08] tracking-[-0.015em]">
-                Tell us about your book.
-              </h1>
+              <h1 className="type-h1 m-0 max-w-[16ch]">Tell us about your book.</h1>
             </RevealOnScroll>
             <RevealOnScroll delayMs={60}>
-              <p className="m-0 max-w-[46ch] text-pretty text-[clamp(15px,1.2vw,16.5px)] leading-[1.8] text-muted">
+              <p className="m-0 max-w-[46ch] text-pretty text-[clamp(0.9375rem,1.2vw,1.03rem)] leading-[1.8] text-muted">
                 A few details help us understand where it belongs.
               </p>
             </RevealOnScroll>

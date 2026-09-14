@@ -52,12 +52,10 @@ export default function FaqPage() {
         />
         <div className="relative mx-auto flex max-w-[760px] flex-col gap-6">
           <RevealOnScroll>
-            <h1 className="m-0 max-w-[18ch] text-pretty font-serif text-[clamp(36px,5.6vw,76px)] font-normal leading-[1.08] tracking-[-0.015em]">
-              Questions, answered plainly.
-            </h1>
+            <h1 className="type-h1 m-0 max-w-[18ch]">Questions, answered plainly.</h1>
           </RevealOnScroll>
           <RevealOnScroll delayMs={60}>
-            <p className="m-0 max-w-[46ch] text-pretty text-[clamp(15px,1.2vw,16.5px)] leading-[1.8] text-muted">
+            <p className="m-0 max-w-[46ch] text-pretty text-[clamp(0.9375rem,1.2vw,1.03rem)] leading-[1.8] text-muted">
               No fine print. Just what you&apos;d actually want to know.
             </p>
           </RevealOnScroll>

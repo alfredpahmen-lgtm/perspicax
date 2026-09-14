@@ -9,12 +9,10 @@ export default function Readers() {
       />
       <div className="relative mx-auto flex max-w-[760px] flex-col gap-7 sm:gap-10">
         <RevealOnScroll>
-          <h2 className="m-0 text-pretty font-serif text-[clamp(30px,4.1vw,56px)] font-normal leading-[1.14] tracking-[-0.01em]">
-            A community that was already reading.
-          </h2>
+          <h2 className="type-h2 m-0">A community that was already reading.</h2>
         </RevealOnScroll>
         <RevealOnScroll delayMs={60}>
-          <p className="m-0 max-w-[58ch] text-pretty text-[clamp(15px,1.2vw,16.5px)] leading-[1.85] text-muted">
+          <p className="m-0 max-w-[58ch] text-pretty text-[clamp(0.9375rem,1.2vw,1.03rem)] leading-[1.85] text-muted">
             Perspicax works with an active, established community of readers — people who read,
             discuss, and review because they want to, not because they&apos;re paid to. Your book
             reaches them the way any book reaches a reader who was already looking for something
@@ -22,7 +20,7 @@ export default function Readers() {
           </p>
         </RevealOnScroll>
         <RevealOnScroll delayMs={120}>
-          <span className="inline-flex items-center rounded-full border border-muted/16 bg-gradient-to-b from-surface/70 to-bg/40 px-4 py-[7px] text-[11.5px] tracking-[0.04em] text-muted">
+          <span className="hairline inline-flex items-center rounded-full border bg-gradient-to-b from-surface/70 to-bg/40 px-4 py-[0.4375rem] text-[0.72rem] tracking-[0.04em] text-muted">
             Real readers. No bots. No bought engagement.
           </span>
         </RevealOnScroll>

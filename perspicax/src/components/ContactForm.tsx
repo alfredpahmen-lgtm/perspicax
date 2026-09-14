@@ -5,7 +5,7 @@ import { useState, type FormEvent } from "react";
 type Status = "idle" | "sending" | "sent" | "error";
 
 const inputClass =
-  "w-full rounded-[10px] border border-muted/16 bg-gradient-to-b from-surface/70 to-bg/40 px-4 py-[13px] text-[14.5px] leading-[1.6] text-text placeholder:text-muted/60 outline-none transition-[border-color,box-shadow] duration-300 hover:border-muted/34 focus:border-violet/65 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.14)]";
+  "hairline w-full rounded-[10px] border bg-gradient-to-b from-surface/70 to-bg/40 px-4 py-[0.8125rem] text-[0.9rem] leading-[1.6] text-text placeholder:text-muted/60 outline-none transition-[border-color,box-shadow] duration-[var(--hover-duration)] ease-[var(--ease-out)] hover:border-muted/34 focus:border-violet/65 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.14)]";
 
 const labelClass = "text-xs uppercase tracking-[0.08em] text-muted";
 
@@ -108,16 +108,24 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={status === "sending"}
-          className="gradient-primary inline-flex items-center justify-center rounded-full px-8 py-[15px] text-sm font-medium text-text transition-[box-shadow,filter,opacity] duration-300 ease-out hover:shadow-[0_10px_40px_-12px_rgba(139,92,246,0.7)] hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-60"
+          className="gradient-primary pressable group relative isolate inline-flex items-center justify-center rounded-full px-8 py-[0.9375rem] text-sm font-medium text-text disabled:cursor-not-allowed disabled:opacity-60"
         >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10 rounded-full opacity-0 shadow-[0_10px_40px_-12px_rgba(139,92,246,0.85)] transition-opacity duration-[var(--hover-duration)] ease-[var(--ease-out)] group-hover:opacity-100"
+          />
           {status === "sending" ? "Sending…" : "Send"}
         </button>
 
         <div role="status" aria-live="polite">
           {status === "sent" && (
-            <span className="text-[13px] text-teal">Thank you — we&apos;ll read it and write back.</span>
+            <span className="text-[0.8125rem] text-teal">
+              Thank you — we&apos;ll read it and write back.
+            </span>
           )}
-          {status === "error" && error && <span className="text-[13px] text-accent">{error}</span>}
+          {status === "error" && error && (
+            <span className="text-[0.8125rem] text-accent">{error}</span>
+          )}
         </div>
       </div>
     </form>

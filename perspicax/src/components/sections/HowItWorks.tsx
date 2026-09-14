@@ -35,13 +35,15 @@ export default function HowItWorks() {
             <RevealOnScroll
               key={step.n}
               delayMs={i * 60}
-              className="flex flex-col gap-5 border-l border-muted/16 pl-5 sm:pl-7"
+              className="hairline flex flex-col gap-5 border-l pl-5 sm:pl-7"
             >
-              <div className="font-serif text-[clamp(34px,3.4vw,46px)] leading-none tracking-[0.01em] text-teal">
+              {/* Numerals sit tighter than the body text they label — display-scale
+                  Playfair reads loose at default tracking. */}
+              <div className="font-serif text-[clamp(2.125rem,3.4vw,2.875rem)] leading-none tracking-[-0.01em] text-teal">
                 {step.n}
               </div>
               <h3 className="m-0 text-base font-medium tracking-[0.01em]">{step.title}</h3>
-              <p className="m-0 max-w-[34ch] text-pretty text-[14.5px] leading-[1.75] text-muted">
+              <p className="m-0 max-w-[34ch] text-pretty text-[0.9rem] leading-[1.75] text-muted">
                 {step.body}
               </p>
             </RevealOnScroll>
