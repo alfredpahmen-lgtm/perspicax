@@ -31,6 +31,30 @@
       "skillPath": "skills/ask-sonner/SKILL.md",
       "computedHash": "23f724e97247b2003ccc479f3a9b3af8e4191a0e133b94ee6b73f8405349687f"
     },
+    "banner-design": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/banner-design/SKILL.md",
+      "computedHash": "ccb89ddc848f60bfe630cb19dfe3e062df94a029467a9b15259f2761019ac5c4"
+    },
+    "brand": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/brand/SKILL.md",
+      "computedHash": "53e7f858e18dea4d687db6e49e8a33786cbcdf720aa40e84bd6d6250f5e59aa8"
+    },
+    "design": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design/SKILL.md",
+      "computedHash": "49d30a81656fb6388eb8cda18240dd6e2a31cd53efd72f62015b3142f4d72c49"
+    },
+    "design-system": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-system/SKILL.md",
+      "computedHash": "8aa5ff93320559a6e5289d37b6b06b3307737dbfb4a6f3fc44135c705613c511"
+    },
     "emil-design-eng": {
       "source": "emilkowalski/skills",
       "sourceType": "github",
@@ -66,6 +90,24 @@
       "sourceType": "github",
       "skillPath": "skills/review-animations/SKILL.md",
       "computedHash": "b9f669af5ae280c19a592a94611520335a81de25c88f225bf60ae4b2d66c8c7c"
+    },
+    "slides": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/slides/SKILL.md",
+      "computedHash": "86c07f19ec09f79441d3837e909cfcd51034b83bdcc88094c15e652be1e765cb"
+    },
+    "ui-styling": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-styling/SKILL.md",
+      "computedHash": "41f6d6a41bf827544e7b47f2ad2fe0264db7820bc6b425adbc037fc5508ffef0"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "ea087c341bfb5b23195c7302027268ede86da802554c18a5c4896a6017b439f9"
     },
     "write-swift": {
       "source": "emilkowalski/skills",
