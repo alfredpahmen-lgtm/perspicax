@@ -3,15 +3,10 @@
 /* ====================================================================
    Perspicax design tokens.
 
-   The site runs two grounds, and every component reads the same token
-   names in both — so no component carries a per-theme branch.
-
-     :root        light. Every page except Home.
-     .theme-dark  dark. Scoped to the Home hero, which keeps the video
-                  and particle background.
-
-   `.theme-dark` is a *scope*, not a user preference: it is applied in
-   markup by the page that wants it, never by a media query.
+   One ground, everywhere: a warm off-white, not a white. The hero used
+   to run a near-black scope of its own; that is gone, and with it the
+   only place on the site where a component had to work against two
+   different backgrounds.
    ==================================================================== */
 
 :root {
@@ -21,7 +16,7 @@
   --text: #0d1726;
   --muted: #5b6270;
 
-  /* Brand hues. Unchanged across both grounds. */
+  /* Brand hues. Used for fills, rules and decoration. */
   --blue: #3b82f6;
   --violet: #8b5cf6;
   --accent: #ec4899;
@@ -46,9 +41,6 @@
      darkened, wherever teal becomes *text*: stat numerals, step
      numbers, accordion marks, case-study tags. 5.51:1 on the light
      ground, 4.88:1 on the secondary surface — AA either way.
-
-     On the dark scope the two collapse back into one value, because
-     #14B8A6 already passes there.
      -------------------------------------------------------------- */
   --teal-ink: #0d7468;
 
@@ -81,18 +73,6 @@
   :root {
     --header-h: 84px;
   }
-}
-
-.theme-dark {
-  --bg: #0d1726;
-  --surface: #16213a;
-  --text: #f5f5f7;
-  --muted: #94a3b8;
-  --teal-ink: var(--teal);
-  --accent-ink: var(--accent);
-  --hairline: rgba(148, 163, 184, 0.16);
-  --focus-ring: color-mix(in srgb, var(--violet) 65%, white);
-  color-scheme: dark;
 }
 
 @theme inline {
@@ -214,8 +194,7 @@
 
   /* ------------------------------------------------------------------
      Materials — translucency only where content actually passes behind the
-     surface: the header, the full-screen menu, and the hero's chips over
-     the video.
+     surface: the header, the full-screen menu, and the hero's trust chips.
      ------------------------------------------------------------------ */
   /* Standard property only — the build's minifier adds the -webkit- prefix from
      its browser targets. Writing the prefix by hand makes it dedupe the two and
@@ -229,8 +208,8 @@
     backdrop-filter: blur(12px) saturate(150%);
   }
 
-  /* Card ground. One class instead of a per-component gradient, so the two
-     themes diverge in exactly one place. */
+  /* Card ground. One class instead of a per-component gradient, so every
+     card picks up a change in a single place. */
   .card-surface {
     background: linear-gradient(
       to bottom,
@@ -571,10 +550,6 @@
   :root {
     --hairline: rgba(13, 23, 38, 0.5);
     --muted: #434a57;
-  }
-  .theme-dark {
-    --hairline: rgba(148, 163, 184, 0.55);
-    --muted: #b6c2d2;
   }
   .material,
   .material-chip {

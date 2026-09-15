@@ -2,17 +2,15 @@ import Header from "@/components/Header";
 import Hero from "@/components/sections/Hero";
 
 /**
- * Home is the hero and nothing else — one dark screen that sets the tone and
- * hands off. Everything that used to scroll underneath it is now a page of its
- * own.
+ * Home is the hero and nothing else — one screen that sets the tone and hands
+ * off. Everything that used to scroll underneath it is now a page of its own.
  *
- * `.theme-dark` is scoped here rather than set globally: this is the only route
- * that keeps the near-black ground, and the header inside it picks up the dark
- * tokens for free.
+ * It runs on the same light ground as every other route. There is no dark scope
+ * on this site any more.
  */
 export default function HomePage() {
   return (
-    <div className="theme-dark bg-bg text-text">
+    <div className="bg-bg text-text">
       {/* Overlay header sits at page level, not inside the hero — a fixed element
           nested in an overflow-hidden section breaks the moment that section
           gains a transform. */}

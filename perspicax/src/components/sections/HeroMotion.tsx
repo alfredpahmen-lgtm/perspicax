@@ -61,6 +61,26 @@ export default function HeroMotion({
     const pointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
     const video = el.querySelector("video");
 
+    // The clip was authored at a pace that reads as busy behind a headline about
+    // a whisper. At 0.55x the same footage drifts rather than moves, which is
+    // the tone the copy is asking for, and it is still clearly in motion — below
+    // roughly 0.4x it stops reading as video and starts reading as a stutter.
+    //
+    // Looping does not reset playbackRate (only changing `src` does), so one
+    // assignment holds for every pass. It is applied again on `loadedmetadata`
+    // because setting it before the media loads is not guaranteed to stick.
+    const RATE = 0.55;
+    const applyRate = () => {
+      if (!video) return;
+      // `defaultPlaybackRate` is the value the element restores to whenever the
+      // UA resets playback rate (notably on load). Setting both means the rate
+      // holds even if none of the handlers below happen to fire first.
+      video.defaultPlaybackRate = RATE;
+      video.playbackRate = RATE;
+    };
+    applyRate();
+    video?.addEventListener("loadedmetadata", applyRate);
+
     let frame = 0;
     let last = 0;
     let running = false;
@@ -134,6 +154,7 @@ export default function HeroMotion({
       video
         .play()
         .then(() => {
+          applyRate();
           el.dataset.video = "playing";
         })
         .catch(() => {
@@ -155,6 +176,7 @@ export default function HeroMotion({
 
     return () => {
       cancelAnimationFrame(frame);
+      video?.removeEventListener("loadedmetadata", applyRate);
       motionQuery.removeEventListener("change", applyMotionPreference);
       window.removeEventListener("scroll", onScroll);
       el.removeEventListener("pointermove", onPointerMove);
