@@ -5,15 +5,9 @@ import Link from "next/link";
 import { HOME_LINK, NAV_LINKS, SITE } from "@/lib/nav";
 
 type HeaderProps = {
-  /** Overlay = floats over the split hero (Home). Default = reserves its own space. */
+  /** Overlay = floats over the hero card (Home). Default = reserves its own space. */
   variant?: "overlay" | "default";
   currentPath?: string;
-  /**
-   * Whether a dark panel sits behind the bar below `lg`. Only meaningful for
-   * the overlay variant, and it cannot be inferred — it depends on which mobile
-   * hero layout is in use. Guessing wrong renders the wordmark light-on-light.
-   */
-  darkOnMobile?: boolean;
 };
 
 const MENU_LINKS = [HOME_LINK, ...NAV_LINKS];
@@ -32,11 +26,7 @@ const MENU_LINKS = [HOME_LINK, ...NAV_LINKS];
  * Nothing here gates anything. Every route is a plain `<Link>`, rendered into
  * the markup on every page, so the whole site is crawlable from any entry point.
  */
-export default function Header({
-  variant = "default",
-  currentPath,
-  darkOnMobile = true,
-}: HeaderProps) {
+export default function Header({ variant = "default", currentPath }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -133,24 +123,6 @@ export default function Header({
   // over the white panel once the split goes side-by-side at `lg`, but over the
   // dark panel below that, where the panel is stacked on top and full width.
   // Without this the wordmark is #0D1726 on #0D1726 and simply disappears.
-  const overlay = variant === "overlay";
-  // Desktop: the wordmark is always over the dark panel, the hamburger always
-  // over the light one. Mobile: both sit over whatever the hero puts there.
-  const markTone = !overlay
-    ? "text-text"
-    : darkOnMobile
-      ? "text-[#F5F5F7]"
-      : "text-text lg:text-[#F5F5F7]";
-  const burgerTone = !overlay
-    ? "bg-text"
-    : darkOnMobile
-      ? "bg-[#F5F5F7] lg:bg-text"
-      : "bg-text";
-  const burgerBorder =
-    overlay && darkOnMobile
-      ? "border-[rgba(245,245,247,0.34)] lg:border-[var(--hairline)]"
-      : "hairline";
-
   return (
     <header className={position}>
       {/* Translucent layer fades in behind the bar rather than transitioning the
@@ -173,7 +145,7 @@ export default function Header({
       <div className="relative flex h-[var(--header-h)] items-center justify-between gap-6 px-6 sm:px-11">
         <Link
           href="/"
-          className={`pressable-text relative z-10 font-serif text-xl tracking-[0.06em] ${open ? "text-text" : markTone}`}
+          className="pressable-text relative z-10 font-serif text-xl tracking-[0.06em] text-text"
           onClick={() => setOpen(false)}
         >
           {SITE.name}
@@ -186,19 +158,19 @@ export default function Header({
           aria-expanded={open}
           aria-controls="site-menu"
           onClick={() => (open ? close() : setOpen(true))}
-          className={`pressable relative z-10 flex h-10 w-10 flex-col items-center justify-center gap-[6px] rounded-full border ${open ? "hairline" : burgerBorder}`}
+          className="pressable hairline relative z-10 flex h-10 w-10 flex-col items-center justify-center gap-[6px] rounded-full border"
           style={{ ["--press-scale" as string]: "0.94" }}
         >
           {/* Two rules that cross into an X. The bars translate to meet in the
               middle before rotating, so open and close run the same path. */}
           <span
-            className={`block h-px w-[18px] transition-transform duration-[280ms] ease-[var(--ease-out)] ${
-              open ? "translate-y-[3.5px] rotate-45 bg-text" : burgerTone
+            className={`block h-px w-[18px] bg-text transition-transform duration-[280ms] ease-[var(--ease-out)] ${
+              open ? "translate-y-[3.5px] rotate-45" : ""
             }`}
           />
           <span
-            className={`block h-px w-[18px] transition-transform duration-[280ms] ease-[var(--ease-out)] ${
-              open ? "-translate-y-[3.5px] -rotate-45 bg-text" : burgerTone
+            className={`block h-px w-[18px] bg-text transition-transform duration-[280ms] ease-[var(--ease-out)] ${
+              open ? "-translate-y-[3.5px] -rotate-45" : ""
             }`}
           />
         </button>

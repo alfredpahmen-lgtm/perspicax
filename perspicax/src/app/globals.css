@@ -259,30 +259,124 @@
   opacity: 1;
 }
 
+/* ====================================================================
+   Glass.
+
+   Three weights, not one. Apple's rule is that material weight encodes
+   hierarchy — heavier materials separate structural regions, lighter
+   ones draw attention to controls — and that a light translucent surface
+   is never stacked on another light translucent surface, because the
+   legibility collapses. So each weight below has one job, and the hero
+   nests them at most one deep.
+
+   Every one of them carries a bright top edge: a real pane of glass
+   catches light along its upper rim, and without it the surface reads as
+   a flat tint rather than a material.
+   ==================================================================== */
+
+/* The floating shell. The biggest surface, so the thickest blur and the
+   deepest shadow. */
+.glass-card {
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 255, 255, 0.62) 46%,
+    rgba(255, 255, 255, 0.74) 100%
+  );
+  backdrop-filter: blur(34px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 2px 6px rgba(13, 23, 38, 0.05),
+    0 20px 46px -16px rgba(13, 23, 38, 0.22),
+    0 60px 110px -44px rgba(13, 23, 38, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* The stage the book stands on. Sits directly on the colour field, so it
+   is the only translucent layer in that stack. */
+.glass-stage {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.30) 0%,
+    rgba(255, 255, 255, 0.12) 52%,
+    rgba(255, 255, 255, 0.22) 100%
+  );
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow:
+    0 20px 50px -26px rgba(13, 23, 38, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Controls. The lightest weight — least blur, tightest shadow — because
+   it draws attention rather than dividing the layout. */
+.glass-chip {
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 1px 2px rgba(13, 23, 38, 0.05),
+    0 8px 20px -10px rgba(13, 23, 38, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+/* --------------------------------------------------------------------
+   The colour field the glass has something to blur.
+
+   Glassmorphism fails on a flat ground: with nothing behind it, a
+   translucent surface is just a lighter rectangle. These are the blurred
+   blobs that give the material something to refract.
+   -------------------------------------------------------------------- */
+.aurora {
+  background:
+    radial-gradient(38% 46% at 24% 30%, rgba(37, 99, 235, 0.52) 0%, rgba(37, 99, 235, 0) 70%),
+    radial-gradient(42% 44% at 72% 24%, rgba(124, 58, 237, 0.46) 0%, rgba(124, 58, 237, 0) 72%),
+    radial-gradient(46% 50% at 58% 78%, rgba(20, 184, 166, 0.34) 0%, rgba(20, 184, 166, 0) 74%),
+    radial-gradient(36% 40% at 14% 82%, rgba(236, 72, 153, 0.26) 0%, rgba(236, 72, 153, 0) 72%);
+  filter: blur(18px);
+}
+
+/* Slow drift, so the field behind the glass is never quite static. Long
+   period and small travel — it should read as light moving, not as
+   something animating. */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.08);
+  }
+  50% {
+    transform: translate3d(-2.5%, 1.8%, 0) scale(1.16);
+  }
+}
+.aurora-drift {
+  animation: aurora-drift 26s ease-in-out infinite;
+}
+
 /* --------------------------------------------------------------------
    Split hero.
 
-   The seam between the dark panel and the light one is a single elliptical
-   arc rather than a straight edge. Both right-hand corner radii are given
-   as percentages of the box, and their vertical halves sum to 100% — so the
-   two corner curves meet at the midpoint and the whole edge becomes one
-   continuous bulge. It scales with the panel, needs no SVG and no fixed
-   coordinates, and there is nothing to re-tune per breakpoint.
-
-   Stacked on mobile the panel is on top, so the arc moves to the bottom
-   edge and keeps pointing at the content that follows it.
+   The seam is a single elliptical arc rather than a straight edge: two
+   percentage corner radii whose vertical halves sum to 100%, so they
+   meet at the midpoint and the whole edge becomes one continuous bulge.
+   It scales with the panel, needs no SVG, and has nothing to re-tune per
+   breakpoint. Stacked on mobile the arc moves to the bottom edge.
    -------------------------------------------------------------------- */
 .book-panel {
-  border-radius: 0 0 28% 28% / 0 0 12% 12%;
+  border-radius: 0 0 26% 26% / 0 0 11% 11%;
 }
 
-/* The panel headline is NOT `.type-display`.
+@media (min-width: 1024px) {
+  .book-panel {
+    border-radius: 0 15% 15% 0 / 0 50% 50% 0;
+  }
+}
 
-   Every display size on this site ramps on `vw`, which is the full viewport —
-   correct when the headline owns the whole width, wrong here, where it owns
-   53% of it. At 1440px `.type-display` resolves to ~116px and three lines of
-   it swallow the panel, leaving the book a strip at the bottom. This ramp is
-   scaled to the panel's own share of the viewport. */
+/* The panel headline is NOT a full-width display ramp.
+
+   Every display size on this site scales on `vw`, which is the whole
+   viewport — correct when the headline owns the full width, wrong in a
+   panel that owns half of it, where it resolved to ~116px and starved
+   the book. This ramp is scaled to the panel's own share. */
 .type-panel {
   font-family: var(--font-playfair), Georgia, serif;
   font-weight: 400;
@@ -291,58 +385,22 @@
   letter-spacing: clamp(-1.7px, 0.6px - 0.16vw, -0.12px);
 }
 
-@media (min-width: 1024px) {
-  .book-panel {
-    border-radius: 0 16% 16% 0 / 0 50% 50% 0;
-  }
+/* Vibrancy: text over a translucent surface needs a touch more weight and
+   a hair more tracking than the same text on a solid ground, or the blur
+   behind it eats the stems. */
+.on-glass {
+  font-weight: 500;
+  letter-spacing: 0.012em;
 }
 
-/* --------------------------------------------------------------------
-   Headline build.
-
-   Each phrase is a clipped band; the span inside rises out of it. The
-   travel and opacity are driven by React state (a phrase stays once it has
-   landed), so these rules only supply the mask geometry and the descender
-   room — `pb`/`-mb` so the clip never shaves the tail off a 'p'.
-   -------------------------------------------------------------------- */
+/* Headline build — each phrase is a clipped band, the span inside rises
+   out of it. Travel and opacity are driven by React state, so this only
+   supplies the mask geometry and descender room. */
 .hero-line {
   display: block;
   overflow: hidden;
   padding-bottom: 0.14em;
   margin-bottom: -0.14em;
-}
-
-@keyframes px-breathe {
-  0%,
-  100% {
-    opacity: 0.78;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.035);
-  }
-}
-.glow-breathe {
-  animation: px-breathe 14s ease-in-out infinite;
-}
-
-/* Floating motes. Long periods and sub-10px travel: present when looked for,
-   invisible when not. Deliberately not a bounce — no overshoot anywhere. */
-@keyframes mote-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-    opacity: 0.22;
-  }
-  50% {
-    transform: translate3d(0, -9px, 0);
-    opacity: 0.5;
-  }
-}
-.mote {
-  animation: mote-drift var(--mote-duration, 19s) ease-in-out infinite;
-  animation-delay: var(--mote-delay, 0s);
 }
 
 /* The "start here" cue. A slow, small nudge — it points, it doesn't jump. */
@@ -378,16 +436,9 @@
   html {
     scroll-behavior: auto;
   }
-  .glow-breathe,
-  .mote,
-  .cue-nudge {
+  .cue-nudge,
+  .aurora-drift {
     animation: none;
-  }
-  .glow-breathe {
-    opacity: 0.85;
-  }
-  .mote {
-    opacity: 0.36;
   }
   /* The hero hands the headline its finished state directly under reduced
      motion, so nothing here needs to travel. The band must also stop
@@ -407,11 +458,25 @@
 }
 
 /* Translucent surfaces go frosty-solid rather than blurred. */
+/* Frosty-solid instead of blurred. Glass is the whole look here, so these
+   keep the shape and the edge and drop only the translucency. */
 @media (prefers-reduced-transparency: reduce) {
   .material,
   .material-chip {
     background: var(--surface);
     backdrop-filter: none;
+  }
+  .glass-card,
+  .glass-chip {
+    background: #fbfaf8;
+    backdrop-filter: none;
+  }
+  .glass-stage {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: none;
+  }
+  .aurora {
+    opacity: 0.5;
   }
 }
 
@@ -420,6 +485,17 @@
   :root {
     --hairline: rgba(13, 23, 38, 0.5);
     --muted: #434a57;
+  }
+  .glass-card,
+  .glass-chip,
+  .glass-stage {
+    background: #ffffff;
+    backdrop-filter: none;
+    border-color: rgba(13, 23, 38, 0.55);
+    box-shadow: none;
+  }
+  .aurora {
+    opacity: 0.28;
   }
   .material,
   .material-chip {

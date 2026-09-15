@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Hero from "@/components/sections/Hero";
-import { HERO_DARK_ON_MOBILE } from "@/lib/hero";
 
 /**
  * Home is the hero and nothing else — one screen that sets the tone and hands
@@ -15,7 +14,7 @@ export default function HomePage() {
       {/* Overlay header sits at page level, not inside the hero — a fixed element
           nested in an overflow-hidden section breaks the moment that section
           gains a transform. */}
-      <Header variant="overlay" currentPath="/" darkOnMobile={HERO_DARK_ON_MOBILE} />
+      <Header variant="overlay" currentPath="/" />
       <main>
         <Hero />
       </main>
