@@ -128,16 +128,9 @@
      viewport range. Leading tightens as size grows.
      ------------------------------------------------------------------ */
 
-  /* Hero headline — 40px → 116px, tracking -0.005em → -0.03em */
-  .type-display {
-    font-family: var(--font-playfair), Georgia, serif;
-    font-weight: 400;
-    font-size: clamp(2.5rem, 8.4vw, 7.25rem);
-    line-height: 1.06;
-    letter-spacing: clamp(-3.48px, 1.14px - 0.334vw, -0.2px);
-    text-wrap: balance;
-  }
-
+  /* Largest full-width step. The hero does NOT use this ramp — it lives in a
+     53%-wide panel and scales on `.type-panel` instead; a vw-based ramp sized
+     for the whole viewport overshoots badly in half of one. */
   /* Subpage headline — 36px → 76px, tracking -0.005em → -0.025em */
   .type-h1 {
     font-family: var(--font-playfair), Georgia, serif;
