@@ -267,150 +267,56 @@
 }
 
 /* --------------------------------------------------------------------
-   Hero entrance.
+   Split hero.
 
-   Two tracks. The headline gets a per-line mask reveal — each line rises
-   out of its own clipped band, which reads as the sentence being set
-   rather than a block fading in. Everything else in the hero keeps the
-   plain rise, delayed so the headline leads.
+   The seam between the dark panel and the light one is a single elliptical
+   arc rather than a straight edge. Both right-hand corner radii are given
+   as percentages of the box, and their vertical halves sum to 100% — so the
+   two corner curves meet at the midpoint and the whole edge becomes one
+   continuous bulge. It scales with the panel, needs no SVG and no fixed
+   coordinates, and there is nothing to re-tune per breakpoint.
 
-   Both end fully visible (`both`), so copy is never stranded invisible
-   if a frame is dropped.
+   Stacked on mobile the panel is on top, so the arc moves to the bottom
+   edge and keeps pointing at the content that follows it.
    -------------------------------------------------------------------- */
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 10px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+.book-panel {
+  border-radius: 0 0 28% 28% / 0 0 12% 12%;
 }
-@keyframes hero-appear {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+
+/* The panel headline is NOT `.type-display`.
+
+   Every display size on this site ramps on `vw`, which is the full viewport —
+   correct when the headline owns the whole width, wrong here, where it owns
+   53% of it. At 1440px `.type-display` resolves to ~116px and three lines of
+   it swallow the panel, leaving the book a strip at the bottom. This ramp is
+   scaled to the panel's own share of the viewport. */
+.type-panel {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.125rem, 4.1vw, 4.25rem);
+  line-height: 1.04;
+  letter-spacing: clamp(-1.7px, 0.6px - 0.16vw, -0.12px);
 }
-/* The line itself travels further than the rise above — it is emerging from
-   behind the mask edge, so the distance has to read as a reveal. */
-@keyframes hero-line {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 0.9em, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
+
+@media (min-width: 1024px) {
+  .book-panel {
+    border-radius: 0 16% 16% 0 / 0 50% 50% 0;
   }
 }
 
-.hero-enter > * {
-  animation: hero-rise 480ms var(--ease-out) both;
-}
-.hero-enter > *:nth-child(1) {
-  animation-delay: 0ms;
-}
-/* The headline occupies slot 2 and animates its own lines, so the wrapper
-   itself must not also fade — that would double the opacity ramp. */
-.hero-enter > *:nth-child(2) {
-  animation: none;
-}
-.hero-enter > *:nth-child(3) {
-  animation-delay: 520ms;
-}
-/* Trust pills sit in a separate track at the foot of the frame, so they carry
-   their own delay to stay part of the same sequence. */
-.hero-enter-late {
-  animation: hero-rise 480ms var(--ease-out) both;
-  animation-delay: 620ms;
-}
+/* --------------------------------------------------------------------
+   Headline build.
 
-/* Each line is a clipping band; the span inside it does the moving. `pb/-mb`
-   gives descenders room so the mask doesn't shave the tail off a 'p' or 'y'. */
+   Each phrase is a clipped band; the span inside rises out of it. The
+   travel and opacity are driven by React state (a phrase stays once it has
+   landed), so these rules only supply the mask geometry and the descender
+   room — `pb`/`-mb` so the clip never shaves the tail off a 'p'.
+   -------------------------------------------------------------------- */
 .hero-line {
   display: block;
   overflow: hidden;
   padding-bottom: 0.14em;
   margin-bottom: -0.14em;
-}
-.hero-line > span {
-  display: block;
-  animation: hero-line 780ms var(--ease-out) both;
-}
-.hero-line:nth-child(1) > span {
-  animation-delay: 120ms;
-}
-.hero-line:nth-child(2) > span {
-  animation-delay: 230ms;
-}
-.hero-line:nth-child(3) > span {
-  animation-delay: 340ms;
-}
-
-/* --------------------------------------------------------------------
-   Hero parallax layers.
-
-   `--hero-scroll` (0 → 1 through the first viewport) and `--hero-px` /
-   `--hero-py` (pointer offset, -1 → 1) are written each frame by
-   HeroMotion, already spring-smoothed. Transform and opacity only, so
-   every layer stays on the compositor.
-
-   Depth is sold by *rate*, not distance: the video sits furthest back and
-   moves least, the particle field sits between, the glow nearest and moves
-   most. Every offset stays under ~20px — quiet depth, not a playful swing —
-   and the copy layer takes no pointer offset at all, because parallaxing
-   body text hurts reading.
-   -------------------------------------------------------------------- */
-/* Still fallback behind the video. Visible until playback actually starts, so
-   the hero is never a black rectangle — under reduced motion, while the file
-   is still buffering, or where the browser can't decode it at all. */
-[data-hero-still] {
-  opacity: 1;
-  transition: opacity 600ms var(--ease-out);
-}
-[data-video="playing"] [data-hero-still] {
-  opacity: 0;
-}
-
-[data-hero-layer] {
-  will-change: transform;
-}
-/* Promotion costs GPU memory for as long as it is declared, and the layers are
-   static whenever the spring has arrived. HeroMotion flips this the moment it
-   settles and clears it again on the next pointer or scroll event. */
-[data-hero-settled="true"] [data-hero-layer] {
-  will-change: auto;
-}
-[data-hero-layer="video"] {
-  transform: translate3d(
-      calc(var(--hero-px, 0) * 5px),
-      calc(var(--hero-py, 0) * 5px + var(--hero-scroll, 0) * 32px),
-      0
-    )
-    scale(1.08);
-}
-/* The particle field — the middle plane. Twice the video's pointer travel. */
-[data-hero-layer="particles"] {
-  transform: translate3d(
-    calc(var(--hero-px, 0) * 11px),
-    calc(var(--hero-py, 0) * 11px - var(--hero-scroll, 0) * 14px),
-    0
-  );
-}
-/* The book glow — nearest plane, so it leads the pointer. */
-[data-hero-layer="glow"] {
-  transform: translate3d(
-    calc(var(--hero-px, 0) * 18px),
-    calc(var(--hero-py, 0) * 18px - var(--hero-scroll, 0) * 26px),
-    0
-  );
-}
-[data-hero-layer="copy"] {
-  transform: translate3d(0, calc(var(--hero-scroll, 0) * -14px), 0);
 }
 
 @keyframes px-breathe {
@@ -446,43 +352,20 @@
   animation-delay: var(--mote-delay, 0s);
 }
 
-/* The "start here" cue at the foot of the hero. A slow, small nudge down the
-   page — it points, it doesn't jump. */
+/* The "start here" cue. A slow, small nudge — it points, it doesn't jump. */
 @keyframes cue-nudge {
   0%,
   100% {
     transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translate3d(0, 4px, 0);
+    transform: translate3d(3px, 0, 0);
   }
 }
 .cue-nudge {
   animation: cue-nudge 3.4s ease-in-out infinite;
 }
 
-/* --------------------------------------------------------------------
-   Primary pill.
-
-   The fill is a deepened version of the brand gradient, and the label is
-   pinned to white here rather than set at each call site.
-
-   Both parts were broken. The old fill (#3B82F6 -> #8B5CF6) put white at
-   3.67:1 at its blue end — below AA. And the label was `text-text`, a
-   theme token, so it flipped to navy #0D1726 on light pages: the footer
-   CTA and the contact Send button rendered dark-on-mid-blue at 4.23:1.
-   A filled button is its own surface; its label must not follow the page
-   theme, or the two scopes pull the contrast requirement in opposite
-   directions and neither can be satisfied.
-
-   Deepening the blue end alone could not reach AA — it tops out at
-   4.23:1 because the violet end becomes the limiting factor. Both stops
-   move one step down the same ramp (blue-500 -> blue-600, violet-500 ->
-   violet-600). Hue shifts 4 degrees on each and saturation stays above
-   83%, so the gradient reads as the same brand gradient, only deeper.
-
-   Worst point anywhere along the sweep is now 5.16:1.
-   -------------------------------------------------------------------- */
 .gradient-primary {
   background-image: linear-gradient(95deg, var(--grad-from) 0%, var(--grad-to) 100%);
   color: #fff;
@@ -513,22 +396,16 @@
   .mote {
     opacity: 0.36;
   }
-  [data-hero-layer] {
-    transform: none;
-    will-change: auto;
-  }
-  .hero-enter > *,
-  .hero-enter-late {
-    animation: hero-appear 300ms ease-out both;
-  }
-  /* The mask reveal is a spatial effect; under reduced motion the lines just
-     appear. The band itself must stop clipping, or a dropped frame could leave
-     a line permanently cut off. */
+  /* The hero hands the headline its finished state directly under reduced
+     motion, so nothing here needs to travel. The band must also stop
+     clipping: with no transition to complete, a clipped line would otherwise
+     be at risk of staying cut off. */
   .hero-line {
     overflow: visible;
   }
-  .hero-line > span {
-    animation: hero-appear 300ms ease-out both;
+  .hero-line > span,
+  .book-panel img {
+    transition: none !important;
   }
   .pressable:active {
     transform: none;
