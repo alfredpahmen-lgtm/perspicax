@@ -108,11 +108,11 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={status === "sending"}
-          className="gradient-primary pressable group relative isolate inline-flex items-center justify-center rounded-full px-8 py-[0.9375rem] text-sm font-medium text-text disabled:cursor-not-allowed disabled:opacity-60"
+          className="gradient-primary pressable group relative isolate inline-flex items-center justify-center rounded-full px-8 py-[0.9375rem] text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
         >
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 -z-10 rounded-full opacity-0 shadow-[0_10px_40px_-12px_rgba(139,92,246,0.85)] transition-opacity duration-[var(--hover-duration)] ease-[var(--ease-out)] group-hover:opacity-100"
+            className="pointer-events-none absolute inset-0 -z-10 rounded-full opacity-0 shadow-[0_10px_40px_-12px_rgba(124,58,237,0.85)] transition-opacity duration-[var(--hover-duration)] ease-[var(--ease-out)] group-hover:opacity-100"
           />
           {status === "sending" ? "Sending…" : "Send"}
         </button>

@@ -27,6 +27,12 @@
   --accent: #ec4899;
   --teal: #14b8a6;
 
+  /* Gradient stops for the primary pill. Deeper than --blue/--violet so
+     white clears AA across the whole sweep; the decorative hues above are
+     untouched and still used everywhere else. */
+  --grad-from: #2563eb;
+  --grad-to: #7c3aed;
+
   /* --------------------------------------------------------------
      Teal has to exist twice.
 
@@ -476,8 +482,31 @@
   animation: cue-nudge 3.4s ease-in-out infinite;
 }
 
+/* --------------------------------------------------------------------
+   Primary pill.
+
+   The fill is a deepened version of the brand gradient, and the label is
+   pinned to white here rather than set at each call site.
+
+   Both parts were broken. The old fill (#3B82F6 -> #8B5CF6) put white at
+   3.67:1 at its blue end — below AA. And the label was `text-text`, a
+   theme token, so it flipped to navy #0D1726 on light pages: the footer
+   CTA and the contact Send button rendered dark-on-mid-blue at 4.23:1.
+   A filled button is its own surface; its label must not follow the page
+   theme, or the two scopes pull the contrast requirement in opposite
+   directions and neither can be satisfied.
+
+   Deepening the blue end alone could not reach AA — it tops out at
+   4.23:1 because the violet end becomes the limiting factor. Both stops
+   move one step down the same ramp (blue-500 -> blue-600, violet-500 ->
+   violet-600). Hue shifts 4 degrees on each and saturation stays above
+   83%, so the gradient reads as the same brand gradient, only deeper.
+
+   Worst point anywhere along the sweep is now 5.16:1.
+   -------------------------------------------------------------------- */
 .gradient-primary {
-  background-image: linear-gradient(95deg, var(--blue) 0%, var(--violet) 100%);
+  background-image: linear-gradient(95deg, var(--grad-from) 0%, var(--grad-to) 100%);
+  color: #fff;
 }
 
 /* --------------------------------------------------------------------
